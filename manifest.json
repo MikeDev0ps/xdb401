@@ -1,0 +1,6 @@
+{
+    "name": "my_external_sensor",
+    "version": "1.0.0",
+    "requirements": [],
+    "esphome_min_version": "2021.10.0"
+  }
