@@ -9,9 +9,7 @@ namespace xdb401 {
 
 class XDB401Component : public PollingComponent, public i2c::I2CDevice {
  public:
-  /// Устанавливает указатель на датчик температуры.
   void set_temperature(sensor::Sensor *temperature) { temperature_ = temperature; }
-  /// Устанавливает указатель на датчик давления.
   void set_pressure(sensor::Sensor *pressure) { pressure_ = pressure; }
 
   void setup() override;
