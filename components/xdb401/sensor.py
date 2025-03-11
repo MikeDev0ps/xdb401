@@ -26,31 +26,21 @@ CONFIG_SCHEMA = (
             # Component ID. Automatically generated.
             cv.GenerateID(): cv.declare_id(XDB401Component),
             # Temperature sensor configuration.
-            cv.Optional(
-                CONF_TEMPERATURE,
-                description="Temperature sensor configuration: unit of measurement, accuracy, device class, and state class."
-            ): sensor.sensor_schema(
+            cv.Optional(CONF_TEMPERATURE): sensor.sensor_schema(
                 unit_of_measurement=UNIT_CELSIUS,
                 accuracy_decimals=2,
                 device_class=DEVICE_CLASS_TEMPERATURE,
                 state_class=STATE_CLASS_MEASUREMENT,
             ),
             # Pressure sensor configuration.
-            cv.Optional(
-                CONF_PRESSURE,
-                description="Pressure sensor configuration: unit of measurement ('bar'), accuracy, device class, and state class."
-            ): sensor.sensor_schema(
+            cv.Optional(CONF_PRESSURE): sensor.sensor_schema(
                 unit_of_measurement="bar",
                 accuracy_decimals=3,
                 device_class=DEVICE_CLASS_PRESSURE,
                 state_class=STATE_CLASS_MEASUREMENT,
             ),
-            # Full-scale parameter for the sensor in MPa.
-            cv.Optional(
-                CONF_FULLSCALE_MPA,
-                default=10.0,
-                description="Full-scale range of the sensor in MPa. Default is 10.0 MPa (which corresponds to 100 bar)."
-            ): cv.float_,
+            # Full-scale range of the sensor in MPa.
+            cv.Optional(CONF_FULLSCALE_MPA, default=10.0): cv.float_,
         }
     )
     .extend(cv.polling_component_schema("60s"))
