@@ -69,13 +69,13 @@ void XDB401Component::read_sensor_data_() {
   int16_t rawTemp = (int16_t)((data[3] << 8) | data[4]);
 
   float pressure_Pa = (float)rawPressure / 2.0;
-  float pressure_hPa = pressure_Pa / 100.0;
+  float pressure_bar = pressure_Pa / 100000.0;
   float temperature_C = (float)rawTemp / 256.0;
 
-  ESP_LOGD(TAG, "XDB401: Давление=%.1f hPa, Температура=%.2f °C", pressure_hPa, temperature_C);
+  ESP_LOGD(TAG, "XDB401: Давление=%.3f bar, Температура=%.2f °C", pressure_bar, temperature_C);
 
   if (this->pressure_ != nullptr)
-    this->pressure_->publish_state(pressure_hPa);
+    this->pressure_->publish_state(pressure_bar);
   if (this->temperature_ != nullptr)
     this->temperature_->publish_state(temperature_C);
 
