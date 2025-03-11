@@ -70,10 +70,8 @@ if (rawPressure > 8388608)
   rawPressure -= 16777216;
 
 // Determine the sensor's full scale:
-// For a sensor with a range of 0–100 bar, the full scale = 10 MPa.
-const float FULLSCALE_MPA = 10.0;
 // Convert the raw value to MPa: divide by 8388608 and multiply by FULLSCALE_MPA.
-float pressure_MPa = (float)rawPressure / 8388608.0 * FULLSCALE_MPA;
+float pressure_MPa = (float)rawPressure / 8388608.0 * this->fullscale_mpa_;
 // Convert MPa to bar (1 MPa = 10 bar).
 float pressure_bar = pressure_MPa * 10.0;
 
@@ -102,6 +100,7 @@ void XDB401Component::dump_config() {
   ESP_LOGCONFIG(TAG, "XDB401 Sensor:");
   LOG_I2C_DEVICE(this);
   LOG_UPDATE_INTERVAL(this);
+  ESP_LOGCONFIG(TAG, "Fullscale: %.2f MPa", this->fullscale_mpa_);
   LOG_SENSOR("  ", "Temperature", this->temperature_);
   LOG_SENSOR("  ", "Pressure", this->pressure_);
 }

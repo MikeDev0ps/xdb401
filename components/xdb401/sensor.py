@@ -13,6 +13,8 @@ from esphome.const import (
 
 DEPENDENCIES = ["i2c"]
 
+CONF_FULLSCALE_MPA = "fullscale_mpa"
+
 xdb401_ns = cg.esphome_ns.namespace("xdb401")
 XDB401Component = xdb401_ns.class_(
     "XDB401Component", cg.PollingComponent, i2c.I2CDevice
@@ -21,19 +23,34 @@ XDB401Component = xdb401_ns.class_(
 CONFIG_SCHEMA = (
     cv.Schema(
         {
+            # Component ID. Automatically generated.
             cv.GenerateID(): cv.declare_id(XDB401Component),
-            cv.Optional(CONF_TEMPERATURE): sensor.sensor_schema(
+            # Temperature sensor configuration.
+            cv.Optional(
+                CONF_TEMPERATURE,
+                description="Temperature sensor configuration: unit of measurement, accuracy, device class, and state class."
+            ): sensor.sensor_schema(
                 unit_of_measurement=UNIT_CELSIUS,
                 accuracy_decimals=2,
                 device_class=DEVICE_CLASS_TEMPERATURE,
                 state_class=STATE_CLASS_MEASUREMENT,
             ),
-            cv.Optional(CONF_PRESSURE): sensor.sensor_schema(
+            # Pressure sensor configuration.
+            cv.Optional(
+                CONF_PRESSURE,
+                description="Pressure sensor configuration: unit of measurement ('bar'), accuracy, device class, and state class."
+            ): sensor.sensor_schema(
                 unit_of_measurement="bar",
                 accuracy_decimals=3,
                 device_class=DEVICE_CLASS_PRESSURE,
                 state_class=STATE_CLASS_MEASUREMENT,
             ),
+            # Full-scale parameter for the sensor in MPa.
+            cv.Optional(
+                CONF_FULLSCALE_MPA,
+                default=10.0,
+                description="Full-scale range of the sensor in MPa. Default is 10.0 MPa (which corresponds to 100 bar)."
+            ): cv.float_,
         }
     )
     .extend(cv.polling_component_schema("60s"))
@@ -52,3 +69,6 @@ async def to_code(config):
     if pressure_config := config.get(CONF_PRESSURE):
         sens = await sensor.new_sensor(pressure_config)
         cg.add(var.set_pressure(sens))
+    
+    fullscale = config[CONF_FULLSCALE_MPA]
+    cg.add(var.set_fullscale_mpa(fullscale))
