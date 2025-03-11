@@ -61,16 +61,31 @@ void XDB401Component::read_sensor_data_() {
     return;
   }
 
+  // ------------------------------
+  // Преобразование давления:
+  // Сырые данные (24-битное число) собираются из байтов data[0..2].
   long rawPressure = ((long)data[0] << 16) | ((long)data[1] << 8) | data[2];
-  if (rawPressure & 0x00800000) {
-    rawPressure |= 0xFF000000;
-  }
-
-  int16_t rawTemp = (int16_t)((data[3] << 8) | data[4]);
-
-  float pressure_Pa = (float)rawPressure / 2.0;
-  float pressure_bar = pressure_Pa / 100000.0;
-  float temperature_C = (float)rawTemp / 256.0;
+  // Если значение больше 8388608, значит, число отрицательное – выполняем коррекцию.
+  if (rawPressure > 8388608)
+    rawPressure -= 16777216;
+  
+  // Определяем полный диапазон датчика: 
+  // Для датчика с диапазоном 0–100 бар полный масштаб = 10 МПа.
+  const float FULLSCALE_MPA = 10.0;
+  // Преобразуем сырое значение в МПа: делим на 8388608 и умножаем на FULLSCALE_MPA.
+  float pressure_MPa = (float)rawPressure / 8388608.0 * FULLSCALE_MPA;
+  // Переводим МПа в бар (1 МПа = 10 бар).
+  float pressure_bar = pressure_MPa * 10.0;
+  
+  // ------------------------------
+  // Преобразование температуры:
+  // Сырые данные температуры (2 байта) находятся в data[3] и data[4].
+  uint16_t rawTemp = ((uint16_t)data[3] << 8) | data[4];
+  // Если значение больше 32768, корректируем знак.
+  if (rawTemp > 32768)
+    rawTemp -= 65536;
+  // Преобразование: умножаем на 128 и делим на 32768. Заметим, что 128/32768 == 1/256.
+  float temperature_C = (float)rawTemp / 32768.0 * 128.0;
 
   ESP_LOGD(TAG, "XDB401: Давление=%.3f bar, Температура=%.2f °C", pressure_bar, temperature_C);
 
