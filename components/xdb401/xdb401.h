@@ -11,6 +11,7 @@ class XDB401Component : public PollingComponent, public i2c::I2CDevice {
  public:
   void set_temperature(sensor::Sensor *temperature) { temperature_ = temperature; }
   void set_pressure(sensor::Sensor *pressure) { pressure_ = pressure; }
+  void set_fullscale_mpa(float fullscale) { fullscale_mpa_ = fullscale; }
 
   void setup() override;
   void update() override;
@@ -23,6 +24,8 @@ class XDB401Component : public PollingComponent, public i2c::I2CDevice {
 
   sensor::Sensor *temperature_{nullptr};
   sensor::Sensor *pressure_{nullptr};
+
+  float fullscale_mpa_{10.0};
 };
 
 }  // namespace xdb401
