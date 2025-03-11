@@ -20,8 +20,8 @@ void XDB401Component::setup() {
 }
 
 void XDB401Component::update() {
-  uint8_t cmd[2] = { REG_CMD, 0x0A };
-  if (!this->write_bytes(cmd, 2)) {  // Заменили write_array на write_bytes
+  uint8_t command = 0x0A;
+  if (!this->write_bytes(REG_CMD, &command, 1)) {
     ESP_LOGE(TAG, "Не удалось отправить команду измерения в XDB401!");
     this->status_set_warning();
     return;
